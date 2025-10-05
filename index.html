@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Toko Pulsa — Halaman Admin</title>
+  <style>
+    /* Styling dasar */
+    :root{
+      --bg:#f7f8fb; --card:#ffffff; --accent:#0b84ff; --muted:#6b7280;
+      --shadow: 0 6px 18px rgba(16,24,40,0.06);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    body{margin:0;background:var(--bg);color:#111827}
+    .container{max-width:800px;margin:28px auto;padding:20px}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,#ff0b0b,#dcb03d);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:20px}
+    h1{margin:0;font-size:20px}
+    p.lead{margin:2px 0 0;color:var(--muted);font-size:13px}
+    .card{background:var(--card);border-radius:12px;padding:14px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px; margin-bottom: 20px;}
+    .btn{display:inline-block;padding:8px 12px;border-radius:10px;text-decoration:none;background:var(--accent);color:white;font-weight:600;cursor:pointer;border:none; text-align: center;}
+    .btn.secondary{background:#eef6ff; color:#0b84ff;}
+    .btn.danger{background:#ff0b0b; color:white;}
+    .tag{background:#eef6ff;color:#0b84ff;padding:4px 8px;border-radius:999px;font-size:12px;font-weight:600}
+    
+    /* Style untuk tabel akun */
+    table{width: 100%; border-collapse: collapse;}
+    th, td{padding: 10px; text-align: left; border-bottom: 1px solid #eee;}
+    th{background: #f0f0f0;}
+    .add-saldo-btn{background: #4CAF50; color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer;}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo">ADM</div>
+        <div>
+          <h1>Halaman Admin</h1>
+          <p class="lead">Kelola Saldo Akun Pengguna (Simulasi)</p>
+        </div>
+      </div>
+      <div style="text-align:right">
+        <a href="user.html" class="btn secondary">🏠 Ke Halaman Utama</a>
+      </div>
+    </header>
+
+    <section>
+        <div class="card">
+            <h3>Daftar Akun Pengguna</h3>
+            <p class="lead" style="margin-bottom: 10px;">Klik 'Tambah Saldo' untuk mengisi ulang akun. Data hanya tersimpan di peramban ini.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID Akun</th>
+                        <th>Saldo Saat Ini</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="accounts-list">
+                    </tbody>
+            </table>
+        </div>
+    </section>
+    
+    <section>
+        <div class="card">
+            <h3>Opsi Lain</h3>
+            <button class="btn danger" id="reset-all-accounts">🗑️ Hapus Semua Akun & Saldo</button>
+        </div>
+    </section>
+
+    <footer>
+      <div style="margin-top:20px; text-align:center; color: var(--muted); font-size: 13px;">
+        Perhatian: Ini adalah demonstrasi. Semua data akun disimpan di browser Anda.
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const adminCode = "rian123";
+    const STORAGE_KEY = 'digitalrian_accounts'; 
+
+    // Muat data akun dari localStorage
+    function loadAccounts() {
+        try {
+            return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+        } catch (e) {
+            console.error("Gagal memuat akun:", e);
+            return {};
+        }
+    }
+
+    // Simpan data akun ke localStorage
+    function saveAccounts(accounts) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(accounts));
+    }
+
+    // Fungsi untuk menampilkan daftar akun
+    function renderAccounts() {
+        const accounts = loadAccounts();
+        const listBody = document.getElementById('accounts-list');
+        listBody.innerHTML = ''; // Bersihkan daftar lama
+
+        const userIDs = Object.keys(accounts);
+
+        if (userIDs.length === 0) {
+            listBody.innerHTML = '<tr><td colspan="3">Belum ada akun yang terdaftar.</td></tr>';
+            return;
+        }
+
+        userIDs.forEach(id => {
+            const saldo = accounts[id];
+            const row = listBody.insertRow();
+
+            // Kolom ID Akun
+            row.insertCell(0).innerText = id;
+
+            // Kolom Saldo
+            row.insertCell(1).innerText = `Rp ${saldo.toLocaleString("id-ID")}`;
+
+            // Kolom Aksi (Tombol Tambah Saldo)
+            const actionCell = row.insertCell(2);
+            const addButton = document.createElement('button');
+            addButton.className = 'add-saldo-btn';
+            addButton.innerText = 'Tambah Saldo';
+            addButton.onclick = () => { promptAddSaldo(id); };
+            actionCell.appendChild(addButton);
+        });
+    }
+
+    // Fungsi untuk menambah saldo ke akun tertentu
+    function promptAddSaldo(userID) {
+        let pass = prompt("Masukkan kode admin:");
+        if (pass !== adminCode) {
+            return alert("Kode admin salah!");
+        }
+
+        let tambah = parseInt(prompt(`Masukkan jumlah saldo yang ingin ditambah untuk akun ${userID}:`));
+        if (isNaN(tambah) || tambah <= 0) {
+            return alert("Jumlah saldo tidak valid!");
+        }
+
+        const accounts = loadAccounts();
+        accounts[userID] = (accounts[userID] || 0) + tambah; 
+        saveAccounts(accounts);
+        renderAccounts(); // Perbarui tampilan
+        alert(`Saldo akun ${userID} berhasil ditambahkan! Saldo baru: Rp ${accounts[userID].toLocaleString("id-ID")}`);
+    }
+
+    // Tombol Hapus Semua Akun
+    document.getElementById("reset-all-accounts").onclick = () => {
+        let pass = prompt("Masukkan kode admin untuk me-reset SEMUA akun:");
+        if (pass !== adminCode) {
+            return alert("Kode admin salah!");
+        }
+
+        const konfirmasi = confirm("Yakin ingin menghapus SEMUA akun dan saldo? Tindakan ini tidak bisa dibatalkan.");
+        if (konfirmasi) {
+            localStorage.removeItem(STORAGE_KEY);
+            renderAccounts();
+            alert("Semua akun dan saldo berhasil dihapus.");
+        }
+    }
+    
+    // Inisialisasi: Tampilkan daftar akun saat halaman dimuat
+    renderAccounts();
+  </script>
+</body>
+</html>
