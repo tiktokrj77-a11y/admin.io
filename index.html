@@ -1,204 +1,334 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Toko Pulsa — Halaman Admin</title>
-  <style>
-    /* Styling dasar */
-    :root{
-      --bg:#f7f8fb; --card:#ffffff; --accent:#0b84ff; --muted:#6b7280;
-      --shadow: 0 6px 18px rgba(16,24,40,0.06);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    }
-    body{margin:0;background:var(--bg);color:#111827}
-    .container{max-width:800px;margin:28px auto;padding:20px}
-    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
-    .brand{display:flex;gap:12px;align-items:center}
-    .logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,#ff0b0b,#dcb03d);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:20px}
-    h1{margin:0;font-size:20px}
-    p.lead{margin:2px 0 0;color:var(--muted);font-size:13px}
-    .card{background:var(--card);border-radius:12px;padding:14px;box-shadow:var(--shadow);margin-bottom: 20px;}
-    .btn{display:inline-block;padding:8px 12px;border-radius:10px;text-decoration:none;background:var(--accent);color:white;font-weight:600;cursor:pointer;border:none; text-align: center;}
-    .btn.secondary{background:#eef6ff; color:#0b84ff;}
-    .btn.danger{background:#ff0b0b; color:white;}
-    
-    /* Style untuk tabel akun */
-    table{width: 100%; border-collapse: collapse; margin-top: 15px;}
-    th, td{padding: 10px; text-align: left; border-bottom: 1px solid #eee;}
-    th{background: #f0f0f0;}
-    .add-saldo-btn{background: #4CAF50; color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer;}
-    .loading{text-align: center; color: var(--muted); padding: 20px;}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel Mobile — Rian Store</title>
+<style>
+:root{
+  --bg:#f7f8fb;
+  --card:#fff;
+  --accent:#5c2cf7;
+  --muted:#6b7280;
+  --danger:#ff4d4f;
+  --shadow:0 4px 12px rgba(0,0,0,0.08);
+  font-family:Inter,system-ui,sans-serif
+}
+body{margin:0;background:var(--bg);color:#111827}
+.container{max-width:480px;margin:auto;padding:12px}
+header{display:flex;align-items:center;justify-content:space-between;padding:12px;background:var(--card);box-shadow:var(--shadow);border-radius:12px;margin-bottom:12px}
+.logo{width:40px;height:40px;background:linear-gradient(135deg,#5c2cf7,#3ddc97);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:18px}
+h1,h2,h3{margin:0 0 8px 0;font-size:16px}
+p{margin:0;font-size:13px;color:var(--muted)}
+.card{background:var(--card);border-radius:12px;padding:12px;margin-bottom:12px;box-shadow:var(--shadow)}
+input,select{width:100%;padding:12px;margin:6px 0;border:1px solid #ccc;border-radius:8px;box-sizing:border-box;font-size:14px}
+button{padding:12px;border:none;border-radius:8px;cursor:pointer;font-weight:600;font-size:14px;width:100%;margin-top:6px}
+.btn-primary{background:var(--accent);color:white}
+.btn-secondary{background:#eef6ff;color:var(--accent)}
+.btn-danger{background:var(--danger);color:white}
+.user-card{background:#fff;border-radius:12px;padding:12px;margin-bottom:12px;box-shadow:var(--shadow);display:flex;align-items:flex-start;gap:12px;flex-direction:column;cursor:pointer}
+.user-header{display:flex;align-items:center;gap:12px;width:100%}
+.user-avatar{width:50px;height:50px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;font-size:20px;display:flex;align-items:center;justify-content:center}
+.user-name{font-weight:700;font-size:16px; flex:1;}
+.saldo-container{display:flex;align-items:center;gap:6px;margin-top:4px}
+.saldo-container button{width:40px;padding:6px;font-size:14px}
+.search-input{margin-bottom:12px}
+.popup{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.4);display:none;align-items:center;justify-content:center;z-index:100}
+.popup .popup-content{background:var(--card);padding:20px;border-radius:16px;width:90%;max-width:400px}
+.close-popup{float:right;cursor:pointer;font-weight:700;font-size:18px}
+.popup h3{margin-bottom:12px;color:var(--accent);text-align:center}
+.popup input{margin-bottom:10px}
+.popup .popup-button{width:100%;margin-top:8px}
+.popup .cancel-btn{background:#eee;color:#555}
+table{width:100%;border-collapse:collapse;margin-top:6px}
+th,td{padding:8px;border:1px solid #ddd;text-align:left;font-size:14px}
+th{background:#f0f0f0}
+</style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <div class="brand">
-        <div class="logo">ADM</div>
-        <div>
-          <h1>Halaman Admin</h1>
-          <p class="lead">Kelola Saldo Akun Pengguna (Data Live)</p>
-        </div>
-      </div>
-      <div style="text-align:right">
-        <a href="user.html" class="btn secondary">🏠 Ke Halaman Utama</a>
-      </div>
-    </header>
 
-    <section>
-        <div class="card">
-            <h3>Daftar Akun Pengguna</h3>
-            <p class="lead" style="margin-bottom: 10px;">Data ini dibaca langsung dari Cloud Firestore.</p>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID Akun</th>
-                        <th>Saldo Saat Ini</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody id="accounts-list">
-                    <tr id="loading-row"><td colspan="3" class="loading">Memuat data dari Firebase...</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </section>
-    
-    <section>
-        <div class="card" style="display:flex; gap: 10px;">
-            <h3>Opsi Lain</h3>
-            <button class="btn" id="refresh-data">🔄 Muat Ulang Data</button>
-            <button class="btn danger" id="reset-all-accounts">🗑️ Hapus Semua Akun & Saldo</button>
-        </div>
-    </section>
+<div class="container" id="login-screen">
+  <div class="card">
+    <h2>Login Admin</h2>
+    <input type="text" id="admin-username" placeholder="Username">
+    <input type="password" id="admin-password" placeholder="Password">
+    <button class="btn-primary" id="login-btn">Masuk</button>
+  </div>
+</div>
 
-    <footer>
-      <div style="margin-top:20px; text-align:center; color: var(--muted); font-size: 13px;">
-        Perhatian: Aplikasi ini menggunakan Firebase Test Mode. Semua data terlihat.
+<div class="container" id="admin-panel" style="display:none">
+  <header>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="logo">RS</div>
+      <div>
+        <h1>Rian Store</h1>
+        <p>👋 Hallo Admin!! Selamat datang</p>
       </div>
-    </footer>
+    </div>
+    <button class="btn-secondary" id="logout-btn">Keluar</button>
+  </header>
+
+  <div class="card">
+    <h2>Dashboard</h2>
+    <p>Total User: <span id="total-user">0</span></p>
+    <p>Total Saldo: <span id="total-saldo">Rp 0</span></p>
+    <p>Total Produk: <span id="total-produk">0</span></p>
   </div>
 
-  <script type="module">
-    // --- INTEGRASI FIREBASE (START) ---
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
-    import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-firestore.js";
+  <input type="text" id="search-user" class="search-input" placeholder="Cari user berdasarkan nama, email, atau WA">
+  <div id="user-list"></div>
 
-    // KODE KONFIGURASI FIREBASE ANDA
-    const firebaseConfig = {
-      apiKey: "AIzaSyBj1P1BlyVgusvpVJ_5TcJdqnffVm6In6E",
-      authDomain: "tokomiken-6fc10.firebaseapp.com",
-      projectId: "tokomiken-6fc10",
-      storageBucket: "tokomiken-6fc10.firebasestorage.app",
-      messagingSenderId: "454827178083",
-      appId: "1:454827178083:web:c83c3627d60942d5af2056",
-      measurementId: "G-18DVM3HBNY"
+  <div class="card">
+    <h2>Kelola Produk</h2>
+    <button class="btn-primary" id="add-product-btn">Tambah Produk</button>
+    <table id="product-table"><thead><tr><th>Operator</th><th>Denom</th><th>Harga</th><th>Kode</th><th>Aksi</th></tr></thead><tbody></tbody></table>
+  </div>
+</div>
+
+<div class="popup" id="popup">
+  <div class="popup-content">
+    <span class="close-popup" id="close-popup">×</span>
+    <div id="popup-body"></div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-firestore-compat.js"></script>
+<script>
+var firebaseConfig = {
+  apiKey: "AIzaSyBj1P1BlyVgusvpVJ_5TcJdqnffVm6In6E",
+  authDomain: "tokomiken-6fc10.firebaseapp.com",
+  projectId: "tokomiken-6fc10",
+  storageBucket: "tokomiken-6fc10.appspot.com",
+  messagingSenderId: "454827178083",
+  appId: "1:454827178083:web:c83c3627d60942d5af2056",
+  measurementId: "G-18DVM3HBNY"
+};
+firebase.initializeApp(firebaseConfig);
+var db = firebase.firestore();
+
+var ACCOUNTS='accounts';
+var PRODUCTS='products';
+var adminUser='admin';
+var adminPass='123456';
+
+var loginScreen=document.getElementById('login-screen');
+var adminPanel=document.getElementById('admin-panel');
+var loginBtn=document.getElementById('login-btn');
+var logoutBtn=document.getElementById('logout-btn');
+var popup=document.getElementById('popup');
+var popupBody=document.getElementById('popup-body');
+var closePopup=document.getElementById('close-popup');
+var userList=document.getElementById('user-list');
+var productTable=document.querySelector('#product-table tbody');
+var totalUserSpan=document.getElementById('total-user');
+var totalSaldoSpan=document.getElementById('total-saldo');
+var totalProdukSpan=document.getElementById('total-produk');
+var searchUserInput=document.getElementById('search-user');
+
+function showPopup(content){ popupBody.innerHTML=content; popup.style.display='flex'; }
+function closePopupFunc(){ popup.style.display='none'; }
+closePopup.onclick=closePopupFunc;
+
+loginBtn.onclick=function(){
+  var u=document.getElementById('admin-username').value.trim();
+  var p=document.getElementById('admin-password').value.trim();
+  if(u===adminUser && p===adminPass){
+    loginScreen.style.display='none';
+    adminPanel.style.display='block';
+    initDemoData();
+  } else {
+    showPopup('<p>Login gagal, username atau password salah</p>');
+  }
+};
+logoutBtn.onclick=function(){ location.reload(); };
+
+var allUsersData=[];
+var allProductsData=[];
+
+function initDemoData(){
+  db.collection(ACCOUNTS).get().then(snapshot=>{
+    if(snapshot.empty){
+      db.collection(ACCOUNTS).add({name:'Budi',email:'budi@mail.com',wa:'08123456789',saldo:100000,password:'123'}); 
+      db.collection(ACCOUNTS).add({name:'Siti',email:'siti@mail.com',wa:'08198765432',saldo:50000,password:'123'}); 
+    }
+  }).finally(loadUsers);
+
+  db.collection(PRODUCTS).get().then(snapshot=>{
+    if(snapshot.empty){
+      db.collection(PRODUCTS).add({operator:'Telkomsel',denom:'10000',price:12000,code:'T01'});
+      db.collection(PRODUCTS).add({operator:'Indosat',denom:'5000',price:5500,code:'I01'});
+    }
+  }).finally(loadProducts);
+}
+
+function loadUsers(){
+  userList.innerHTML='';
+  allUsersData=[];
+
+  db.collection(ACCOUNTS).get().then(function(snapshot){
+    var totalSaldo=0, count=0;
+    snapshot.forEach(function(doc){
+      var u=doc.data();
+      u.id = doc.id;
+      allUsersData.push(u);
+      totalSaldo+=u.saldo||0; count++;
+    });
+    totalUserSpan.innerText=count;
+    totalSaldoSpan.innerText='Rp '+totalSaldo.toLocaleString();
+    renderUserList();
+  });
+}
+
+function renderUserList(){
+  var filter = searchUserInput.value.toLowerCase();
+  userList.innerHTML='';
+  var filtered = allUsersData.filter(u=>{
+    return u.name.toLowerCase().includes(filter) ||
+           u.email.toLowerCase().includes(filter) ||
+           u.wa.toLowerCase().includes(filter);
+  });
+  filtered.forEach(function(u){
+    var card=document.createElement('div');
+    card.className='user-card';
+    card.innerHTML='<div class="user-header">'+
+      '<div class="user-avatar">'+u.name.charAt(0).toUpperCase()+'</div>'+
+      '<div class="user-name">'+u.name+'</div>'+
+      '<div class="saldo-container">'+
+        '<span id="saldo-display-'+u.id+'">Rp '+(u.saldo||0).toLocaleString()+'</span>'+
+        '<button class="btn-primary" onclick="changeSaldo(\''+u.id+'\',1)">+</button>'+
+        '<button class="btn-danger" onclick="changeSaldo(\''+u.id+'\' , -1)">-</button>'+
+      '</div>'+
+      '</div>';
+    userList.appendChild(card);
+
+    card.querySelector('.user-name').onclick=function(e){
+      e.stopPropagation();
+      showUserDetail(u.id);
     };
+  });
+}
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    
-    const ACCOUNTS_COLLECTION = 'accounts'; 
-    const adminCode = "rian123";
-    // --- INTEGRASI FIREBASE (END) ---
+searchUserInput.oninput = renderUserList;
 
+function showUserDetail(id){
+  var u = allUsersData.find(x=>x.id===id);
+  if(!u) return;
+  var html = '<h3>Detail User</h3>'+
+             '<label>Email</label><input type="text" id="email-'+u.id+'" value="'+u.email+'">'+
+             '<label>WA</label><input type="text" id="wa-'+u.id+'" value="'+u.wa+'">'+
+             '<label>Password</label><input type="text" id="pass-'+u.id+'" value="'+u.password+'">'+
+             '<button class="btn-primary" onclick="saveUserDetail(\''+u.id+'\')">Simpan</button>'+
+             '<button class="btn-danger" onclick="deleteUser(\''+u.id+'\')">Hapus</button>'+
+             '<button class="cancel-btn popup-button" onclick="closePopupFunc()">Tutup</button>';
+  showPopup(html);
+}
 
-    async function renderAccounts() {
-        const listBody = document.getElementById('accounts-list');
-        listBody.innerHTML = '<tr><td colspan="3" class="loading">Memuat data...</td></tr>';
+function saveUserDetail(id){
+  var email=document.getElementById('email-'+id).value.trim();
+  var wa=document.getElementById('wa-'+id).value.trim();
+  var pass=document.getElementById('pass-'+id).value.trim();
+  if(!email||!wa||!pass){alert('Isi semua field dengan benar!'); return;}
+  db.collection(ACCOUNTS).doc(id).set({email:email,wa:wa,password:pass},{merge:true})
+    .then(function(){ closePopupFunc(); loadUsers(); alert('Data user berhasil diperbarui!'); });
+}
 
-        try {
-            const accountsSnapshot = await getDocs(collection(db, ACCOUNTS_COLLECTION));
-            
-            listBody.innerHTML = ''; 
+function changeSaldo(id, type){
+  var user = allUsersData.find(u=>u.id===id);
+  if(!user) return;
 
-            if (accountsSnapshot.empty) {
-                listBody.innerHTML = '<tr><td colspan="3">Belum ada akun yang terdaftar di database.</td></tr>';
-                return;
-            }
+  var action = type === 1 ? 'Menambah' : 'Mengurangi';
+  var html = '<h3>'+action+' Saldo</h3>'+
+             '<input type="number" id="saldo-amount" placeholder="Masukkan nominal" min="1">'+
+             '<button class="btn-primary" onclick="confirmChangeSaldo(\''+id+'\', '+type+')">Simpan</button>'+
+             '<button class="cancel-btn popup-button" onclick="closePopupFunc()">Batal</button>';
+  showPopup(html);
+}
 
-            accountsSnapshot.forEach(doc => {
-                const id = doc.id;
-                const saldo = doc.data().saldo || 0;
-                
-                const row = listBody.insertRow();
-                row.insertCell(0).innerText = id;
-                row.insertCell(1).innerText = `Rp ${saldo.toLocaleString("id-ID")}`;
+function confirmChangeSaldo(id, type){
+  var amount = parseInt(document.getElementById('saldo-amount').value);
+  if(isNaN(amount) || amount <=0){ alert('Masukkan nominal valid!'); return; }
 
-                const actionCell = row.insertCell(2);
-                const addButton = document.createElement('button');
-                addButton.className = 'add-saldo-btn';
-                addButton.innerText = 'Tambah Saldo';
-                addButton.onclick = () => { promptAddSaldo(id); };
-                actionCell.appendChild(addButton);
-            });
+  var user = allUsersData.find(u=>u.id===id);
+  if(!user) return;
 
-        } catch (error) {
-            console.error("Gagal memuat daftar akun:", error);
-            listBody.innerHTML = `<tr><td colspan="3" class="loading" style="color:red;">Error memuat data: ${error.message}</td></tr>`;
-        }
-    }
+  var newSaldo = type===1 ? (user.saldo||0)+amount : (user.saldo||0)-amount;
+  if(newSaldo<0){
+    alert('Saldo tidak bisa kurang dari 0!');
+    return;
+  }
 
-    async function promptAddSaldo(userID) {
-        let pass = prompt("Masukkan kode admin:");
-        if (pass !== adminCode) {
-            return alert("Kode admin salah!");
-        }
+  db.collection(ACCOUNTS).doc(id).set({saldo:newSaldo},{merge:true}).then(function(){
+    user.saldo = newSaldo;
+    document.getElementById('saldo-display-'+id).innerText = 'Rp '+newSaldo.toLocaleString();
+    totalSaldoSpan.innerText = 'Rp '+allUsersData.reduce((sum,u)=>sum+(u.saldo||0),0).toLocaleString();
+    closePopupFunc();
+    alert('Saldo berhasil diperbarui!');
+  });
+}
 
-        let tambah = parseInt(prompt(`Masukkan jumlah saldo yang ingin ditambah untuk akun ${userID}:`));
-        if (isNaN(tambah) || tambah <= 0) {
-            return alert("Jumlah saldo tidak valid!");
-        }
+function deleteUser(id){ if(confirm('Hapus user ini?')) db.collection(ACCOUNTS).doc(id).delete().then(loadUsers); }
 
-        try {
-            const docRef = doc(db, ACCOUNTS_COLLECTION, userID);
-            const docSnap = await getDoc(docRef); 
+function loadProducts(){
+  productTable.innerHTML='';
+  db.collection(PRODUCTS).get().then(function(snapshot){
+    var count=0;
+    snapshot.forEach(function(doc){
+      var p=doc.data();
+      var tr=document.createElement('tr');
+      tr.innerHTML="<td>"+p.operator+"</td><td>"+p.denom+"</td><td>Rp "+p.price.toLocaleString()+"</td><td>"+p.code+"</td>"+
+        "<td><button class='btn-primary' onclick='editProduct(\""+doc.id+"\",\""+p.operator+"\",\""+p.denom+"\",\""+p.price+"\",\""+p.code+"\")'>Edit</button>"+
+        "<button class='btn-danger' onclick='deleteProduct(\""+doc.id+"\")'>Hapus</button></td>";
+      productTable.appendChild(tr); count++;
+    });
+    totalProdukSpan.innerText=count;
+  });
+}
 
-            if (docSnap.exists()) {
-                const currentSaldo = docSnap.data().saldo || 0;
-                const newSaldo = currentSaldo + tambah;
-                
-                // MENGGUNAKAN setDoc UNTUK MENGUPDATE SALDO
-                await setDoc(docRef, { saldo: newSaldo }, { merge: true }); 
-                
-                renderAccounts(); 
-                alert(`Saldo akun ${userID} berhasil ditambahkan! Saldo baru: Rp ${newSaldo.toLocaleString("id-ID")}`);
-            } else {
-                alert(`Akun ${userID} tidak ditemukan lagi di database!`);
-            }
-        } catch (error) {
-            console.error("Gagal update saldo:", error);
-            alert("Gagal mengupdate saldo ke Firebase. CEK ATURAN KEAMANAN (RULES) DI KONSOL FIREBASE ANDA.");
-        }
-    }
+function deleteProduct(id){ if(confirm('Hapus produk ini?')) db.collection(PRODUCTS).doc(id).delete().then(loadProducts); }
 
-    document.getElementById("reset-all-accounts").onclick = async () => {
-        let pass = prompt("Masukkan kode admin untuk me-reset SEMUA akun:");
-        if (pass !== adminCode) {
-            return alert("Kode admin salah!");
-        }
+function editProduct(id,operator,denom,price,code){
+  showPopup('<h3>Edit Produk</h3>'+ 
+    '<input type="text" id="prod-operator" value="'+operator+'" placeholder="Operator">'+
+    '<input type="text" id="prod-denom" value="'+denom+'" placeholder="Denom">'+
+    '<input type="number" id="prod-price" value="'+price+'" placeholder="Harga">'+
+    '<input type="text" id="prod-code" value="'+code+'" placeholder="Kode">'+
+    '<button class="btn-primary" onclick="saveProduct(\''+id+'\')">Simpan</button>'+
+    '<button class="cancel-btn popup-button" onclick="closePopupFunc()">Batal</button>'
+  );
+}
 
-        const konfirmasi = confirm("PERINGATAN! Yakin ingin menghapus SEMUA akun dan saldo? Tindakan ini tidak bisa dibatalkan.");
-        if (konfirmasi) {
-            try {
-                const accountsSnapshot = await getDocs(collection(db, ACCOUNTS_COLLECTION));
-                const deletePromises = accountsSnapshot.docs.map(d => deleteDoc(d.ref));
-                await Promise.all(deletePromises);
-                
-                renderAccounts();
-                alert("Semua akun dan saldo berhasil dihapus dari Firebase.");
-            } catch (error) {
-                console.error("Gagal menghapus semua akun:", error);
-                alert("Gagal menghapus semua akun. Periksa aturan keamanan Firestore.");
-            }
-        }
-    }
+function saveProduct(id){
+  var newOp=document.getElementById('prod-operator').value.trim();
+  var newDenom=document.getElementById('prod-denom').value.trim();
+  var newPrice=parseInt(document.getElementById('prod-price').value);
+  var newCode=document.getElementById('prod-code').value.trim();
+  if(!newOp||!newDenom||isNaN(newPrice)||!newCode){alert('Isi semua field dengan benar!'); return;}
+  db.collection(PRODUCTS).doc(id).set({operator:newOp,denom:newDenom,price:newPrice,code:newCode}).then(function(){ closePopupFunc(); loadProducts(); });
+}
 
-    document.getElementById("refresh-data").onclick = renderAccounts;
-    
-    renderAccounts();
-  </script>
+document.getElementById('add-product-btn').onclick=function(){
+  showPopup('<h3>Tambah Produk</h3>'+
+    '<input type="text" id="prod-operator" placeholder="Operator">'+
+    '<input type="text" id="prod-denom" placeholder="Denom">'+
+    '<input type="number" id="prod-price" placeholder="Harga">'+
+    '<input type="text" id="prod-code" placeholder="Kode">'+
+    '<button class="btn-primary" onclick="addProduct()">Simpan</button>'+
+    '<button class="cancel-btn popup-button" onclick="closePopupFunc()">Batal</button>'
+  );
+};
+
+function addProduct(){
+  var newOp=document.getElementById('prod-operator').value.trim();
+  var newDenom=document.getElementById('prod-denom').value.trim();
+  var newPrice=parseInt(document.getElementById('prod-price').value);
+  var newCode=document.getElementById('prod-code').value.trim();
+  if(!newOp||!newDenom||isNaN(newPrice)||!newCode){alert('Isi semua field dengan benar!'); return;}
+  db.collection(PRODUCTS).add({operator:newOp,denom:newDenom,price:newPrice,code:newCode}).then(function(){ closePopupFunc(); loadProducts(); });
+}
+
+// Inisialisasi semua
+function loadAll(){ loadUsers(); loadProducts(); }
+</script>
 </body>
 </html>
-
