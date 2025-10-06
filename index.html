@@ -3,102 +3,119 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Panel Mobile — Rian Store</title>
+<title>Admin Terbaik</title>
 <style>
 :root{
-  --bg:#f7f8fb;
-  --card:#fff;
-  --accent:#5c2cf7;
-  --muted:#6b7280;
-  --danger:#ff4d4f;
-  --shadow:0 4px 12px rgba(0,0,0,0.08);
+  --bg:#f7f8fb; --card:#fff; --accent:#5c2cf7; --muted:#6b7280; --danger:#ff4d4f; --shadow:0 4px 12px rgba(0,0,0,0.08);
   font-family:Inter,system-ui,sans-serif
 }
 body{margin:0;background:var(--bg);color:#111827}
-.container{max-width:480px;margin:auto;padding:12px}
+.container{max-width:720px;margin:auto;padding:12px}
 header{display:flex;align-items:center;justify-content:space-between;padding:12px;background:var(--card);box-shadow:var(--shadow);border-radius:12px;margin-bottom:12px}
-.logo{width:40px;height:40px;background:linear-gradient(135deg,#5c2cf7,#3ddc97);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:18px}
-h1,h2,h3{margin:0 0 8px 0;font-size:16px}
+.logo{width:42px;height:42px;background:linear-gradient(135deg,#5c2cf7,#3ddc97);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:18px}
+h1,h2,h3{margin:0;font-size:16px}
 p{margin:0;font-size:13px;color:var(--muted)}
 .card{background:var(--card);border-radius:12px;padding:12px;margin-bottom:12px;box-shadow:var(--shadow)}
-input,select{width:100%;padding:12px;margin:6px 0;border:1px solid #ccc;border-radius:8px;box-sizing:border-box;font-size:14px}
-button{padding:12px;border:none;border-radius:8px;cursor:pointer;font-weight:600;font-size:14px;width:100%;margin-top:6px}
+input,select{width:100%;padding:10px;margin:6px 0;border:1px solid #ccc;border-radius:8px;box-sizing:border-box;font-size:14px}
+button{padding:10px 12px;border:none;border-radius:8px;cursor:pointer;font-weight:600;font-size:14px}
 .btn-primary{background:var(--accent);color:white}
 .btn-secondary{background:#eef6ff;color:var(--accent)}
 .btn-danger{background:var(--danger);color:white}
-.user-card{background:#fff;border-radius:12px;padding:12px;margin-bottom:12px;box-shadow:var(--shadow);display:flex;align-items:flex-start;gap:12px;flex-direction:column;cursor:pointer}
-.user-header{display:flex;align-items:center;gap:12px;width:100%}
-.user-avatar{width:50px;height:50px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;font-size:20px;display:flex;align-items:center;justify-content:center}
-.user-name{font-weight:700;font-size:16px; flex:1;}
-.saldo-container{display:flex;align-items:center;gap:6px;margin-top:4px}
-.saldo-container button{width:40px;padding:6px;font-size:14px}
-.search-input{margin-bottom:12px}
-.popup{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.4);display:none;align-items:center;justify-content:center;z-index:100}
-.popup .popup-content{background:var(--card);padding:20px;border-radius:16px;width:90%;max-width:400px}
-.close-popup{float:right;cursor:pointer;font-weight:700;font-size:18px}
-.popup h3{margin-bottom:12px;color:var(--accent);text-align:center}
-.popup .popup-label{font-size:13px;margin-bottom:4px;display:block}
-.popup input{margin-bottom:10px}
-.popup .popup-button{width:100%;margin-top:8px}
-.popup .cancel-btn{background:#eee;color:#555}
-table{width:100%;border-collapse:collapse;margin-top:6px}
-th,td{padding:8px;border:1px solid #ddd;text-align:left;font-size:14px}
-th{background:#f0f0f0}
+.hidden{display:none}
+.table{width:100%;border-collapse:collapse;margin-top:10px}
+.table th,.table td{border-bottom:1px solid #eee;padding:8px;text-align:left;font-size:13px}
+.action-btns button{margin-right:6px}
+
+/* Tombol hapus kategori — ringkas & profesional */
+.category-delete-btn {
+  padding: 2px 5px;        /* ringkas tapi masih nyaman diklik */
+  font-size: 9px;         /* font lebih kecil */
+  border-radius: 4px;      /* radius rapi */
+  min-width: 0;            /* lebar minimal */
+  height: 22px;            /* tinggi tombol pas */
+  line-height: 18px;
+  background-color: var(--danger);
+  color: black;
+  border: none;
+  cursor: pointer;
+  float: right;            /* tetap di kanan header kategori */
+  transition: 0.2s;
+}
+
+.category-delete-btn:hover {
+  background-color: #c62828;
+}
+
+/* Kategori header */
+.category-header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  cursor:pointer;
+}
+.categories .card{margin-bottom:35px}
 </style>
 </head>
 <body>
 
+<!-- LOGIN SCREEN -->
 <div class="container" id="login-screen">
   <div class="card">
     <h2>Login Admin</h2>
-    <input type="text" id="admin-username" placeholder="Username">
-    <input type="password" id="admin-password" placeholder="Password">
+    <input type="text" id="admin-user" placeholder="Username">
+    <input type="password" id="admin-pass" placeholder="Password">
     <button class="btn-primary" id="login-btn">Masuk</button>
   </div>
 </div>
 
-<div class="container" id="admin-panel" style="display:none">
+<!-- ADMIN PANEL -->
+<div class="container hidden" id="admin-panel">
   <header>
     <div style="display:flex;align-items:center;gap:8px">
-      <div class="logo">RS</div>
+      <div class="logo">KS</div>
       <div>
-        <h1>Rian Store</h1>
-        <p>👋 Hallo Admin!! Selamat datang</p>
+        <h1>Khenenk Store</h1>
+        <p>Panel Kontrol</p>
       </div>
     </div>
     <button class="btn-secondary" id="logout-btn">Keluar</button>
   </header>
 
-  <div class="card">
-    <h2>Dashboard</h2>
-    <p>Total User: <span id="total-user">0</span></p>
-    <p>Total Saldo: <span id="total-saldo">Rp 0</span></p>
-    <p>Total Produk: <span id="total-produk">0</span></p>
+  <!-- PANEL KONTROL -->
+  <div class="card" id="panel-control">
+    <button class="btn-secondary" id="total-users-btn">Total Pengguna: <span id="total-users">0</span></button>
+    <button class="btn-secondary" id="total-saldo-btn">Total Saldo: Rp <span id="total-saldo">0</span></button>
   </div>
 
-  <input type="text" id="search-user" class="search-input" placeholder="Cari user berdasarkan nama, email, atau WA">
+  <!-- DAFTAR PENGGUNA -->
+  <div class="card hidden" id="user-panel">
+    <button class="btn-secondary" id="back-main">Kembali</button>
+    <input type="text" id="search-user" placeholder="Cari Nama, Email, WhatsApp" oninput="filterUsers(this.value)">
+    <table class="table" id="user-table">
+      <thead><tr><th>Nama</th><th>Email</th><th>Saldo</th><th>Aksi</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
 
-  <div id="user-list"></div>
-
+  <!-- PENCARIAN PRODUK GLOBAL -->
   <div class="card">
-    <h2>Kelola Produk</h2>
-    <button class="btn-primary" id="add-product-btn">Tambah Produk</button>
-    <table id="product-table"><thead><tr><th>Operator</th><th>Denom</th><th>Harga</th><th>Kode</th><th>Aksi</th></tr></thead><tbody></tbody></table>
+    <input type="text" id="search-product" placeholder="Cari Kategori, Produk, Denom, Harga" oninput="filterProducts(this.value)">
+  </div>
+
+  <!-- KATEGORI PRODUK -->
+  <div id="categories-container" class="categories"></div>
+
+  <!-- TAMBAH KATEGORI -->
+  <div class="card">
+    <input type="text" id="new-category-name" placeholder="Nama Kategori Baru">
+    <button class="btn-primary" id="add-category-btn">Tambah Kategori</button>
   </div>
 </div>
 
-<div class="popup" id="popup">
-  <div class="popup-content">
-    <span class="close-popup" id="close-popup">×</span>
-    <div id="popup-body"></div>
-  </div>
-</div>
-
-<!-- Firebase compat -->
 <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-firestore-compat.js"></script>
 <script>
-var firebaseConfig = {
+const firebaseConfig = {
   apiKey: "AIzaSyBj1P1BlyVgusvpVJ_5TcJdqnffVm6In6E",
   authDomain: "tokomiken-6fc10.firebaseapp.com",
   projectId: "tokomiken-6fc10",
@@ -108,303 +125,276 @@ var firebaseConfig = {
   measurementId: "G-18DVM3HBNY"
 };
 firebase.initializeApp(firebaseConfig);
-var db = firebase.firestore();
+const db = firebase.firestore();
 
-var ACCOUNTS='accounts';
-var PRODUCTS='products';
-var adminUser='admin';
-var adminPass='123456';
+// LOGIN
+const loginScreen = document.getElementById('login-screen');
+const adminPanel = document.getElementById('admin-panel');
+const loginBtn = document.getElementById('login-btn');
+const logoutBtn = document.getElementById('logout-btn');
+const panelControl = document.getElementById('panel-control');
+const userPanel = document.getElementById('user-panel');
+const backMainBtn = document.getElementById('back-main');
+const categoriesContainer = document.getElementById('categories-container');
+const totalUsersBtn = document.getElementById('total-users-btn');
+const totalSaldoBtn = document.getElementById('total-saldo-btn');
 
-var loginScreen=document.getElementById('login-screen');
-var adminPanel=document.getElementById('admin-panel');
-var loginBtn=document.getElementById('login-btn');
-var logoutBtn=document.getElementById('logout-btn');
-var popup=document.getElementById('popup');
-var popupBody=document.getElementById('popup-body');
-var closePopup=document.getElementById('close-popup');
-var userList=document.getElementById('user-list');
-var productTable=document.querySelector('#product-table tbody');
-var totalUserSpan=document.getElementById('total-user');
-var totalSaldoSpan=document.getElementById('total-saldo');
-var totalProdukSpan=document.getElementById('total-produk');
-var searchUserInput=document.getElementById('search-user');
-
-function showPopup(content){ popupBody.innerHTML=content; popup.style.display='flex'; }
-function closePopupFunc(){ popup.style.display='none'; }
-closePopup.onclick=closePopupFunc;
-
-loginBtn.onclick=function(){
-  var u=document.getElementById('admin-username').value.trim();
-  var p=document.getElementById('admin-password').value.trim();
-  if(u===adminUser && p===adminPass){
-    loginScreen.style.display='none';
-    adminPanel.style.display='block';
-    // start realtime listeners
-    startRealtimeUsers();
-    startRealtimeProducts();
+loginBtn.onclick = ()=>{
+  const user=document.getElementById('admin-user').value.trim();
+  const pass=document.getElementById('admin-pass').value.trim();
+  if(user==='admin' && pass==='123'){
+    loginScreen.classList.add('hidden');
+    adminPanel.classList.remove('hidden');
+    loadUsers();
+    loadCategories();
   } else {
-    showPopup('<p>Login gagal, username atau password salah</p>');
+    alert('Login gagal!');
   }
 };
-logoutBtn.onclick=function(){
-  stopRealtimeListeners();
-  location.reload();
+
+logoutBtn.onclick=()=>{
+  loginScreen.classList.remove('hidden');
+  adminPanel.classList.add('hidden');
 };
 
-var allUsersData=[];
-var allProductsData=[];
-var unsubUsers = null;
-var unsubProducts = null;
+// LOAD USERS
+function loadUsers(orderBySaldo=false){
+  let query = db.collection('accounts');
+  if(orderBySaldo) query = query.orderBy('saldo','desc');
+  else query = query.orderBy('createdAt','desc');
 
-/* ---------- Real-time listeners ---------- */
-function startRealtimeUsers(){
-  // detach if exists
-  if(unsubUsers){ try{ unsubUsers(); }catch(e){} unsubUsers=null; }
-  unsubUsers = db.collection(ACCOUNTS).onSnapshot(function(snapshot){
-    // rebuild local array from snapshot (preserve order by doc id)
-    allUsersData = [];
-    var totalSaldo = 0, count = 0;
-    snapshot.forEach(function(doc){
-      var u = doc.data();
-      u.id = doc.id;
-      allUsersData.push(u);
+  query.onSnapshot(snapshot=>{
+    const tbody=document.querySelector('#user-table tbody');
+    tbody.innerHTML='';
+    let totalUsers = 0;
+    let totalSaldo = 0;
+    snapshot.forEach(doc=>{
+      const u=doc.data();
+      totalUsers++;
       totalSaldo += u.saldo||0;
-      count++;
+      const tr=document.createElement('tr');
+      tr.innerHTML=`
+        <td class="user-name" onclick="showUserDetail('${doc.id}')">${u.name||'-'}</td>
+        <td>${u.email||'-'}</td>
+        <td>Rp ${(u.saldo||0).toLocaleString()}</td>
+        <td class="action-btns">
+          <button class="btn-primary" onclick="addSaldo('${doc.id}')">+</button>
+          <button class="btn-danger" onclick="subtractSaldo('${doc.id}')">-</button>
+          <button class="btn-secondary" onclick="editUser('${doc.id}')">Edit</button>
+        </td>`;
+      tbody.appendChild(tr);
     });
-    totalUserSpan.innerText = count;
-    totalSaldoSpan.innerText = 'Rp ' + totalSaldo.toLocaleString();
-    renderUserList(); // re-render UI
-  }, function(err){
-    console.error('Realtime users error:', err);
+    document.getElementById('total-users').innerText = totalUsers;
+    document.getElementById('total-saldo').innerText = totalSaldo.toLocaleString();
   });
 }
 
-function startRealtimeProducts(){
-  if(unsubProducts){ try{ unsubProducts(); }catch(e){} unsubProducts=null; }
-  unsubProducts = db.collection(PRODUCTS).onSnapshot(function(snapshot){
-    allProductsData = [];
-    productTable.innerHTML = '';
-    var count = 0;
-    snapshot.forEach(function(doc){
-      var p = doc.data();
-      p.id = doc.id;
-      allProductsData.push(p);
-      var tr = document.createElement('tr');
-      tr.innerHTML = "<td>"+escapeHtml(p.operator)+"</td><td>"+escapeHtml(p.denom)+"</td><td>Rp "+(p.price||0).toLocaleString()+"</td><td>"+escapeHtml(p.code)+"</td>"+
-        "<td><button class='btn-primary' onclick='editProduct(\""+doc.id+"\",\""+escapeAttr(p.operator)+"\",\""+escapeAttr(p.denom)+"\",\""+(p.price||0)+"\",\""+escapeAttr(p.code)+"\")'>Edit</button>"+
-        "<button class='btn-danger' onclick='deleteProduct(\""+doc.id+"\")'>Hapus</button></td>";
-      productTable.appendChild(tr);
-      count++;
-    });
-    totalProdukSpan.innerText = count;
-  }, function(err){
-    console.error('Realtime products error:', err);
-  });
-}
-
-function stopRealtimeListeners(){
-  if(unsubUsers){ try{ unsubUsers(); }catch(e){} unsubUsers=null; }
-  if(unsubProducts){ try{ unsubProducts(); }catch(e){} unsubProducts=null; }
-}
-
-/* ---------- Rendering & search ---------- */
-function renderUserList(){
-  var filter = (searchUserInput.value||'').toLowerCase();
-  userList.innerHTML = '';
-  var filtered = allUsersData.filter(u=>{
-    var name = (u.name||'').toLowerCase();
-    var email = (u.email||'').toLowerCase();
-    var wa = (u.wa||'').toLowerCase();
-    return name.includes(filter) || email.includes(filter) || wa.includes(filter);
-  });
-  filtered.forEach(function(u){
-    var card=document.createElement('div');
-    card.className='user-card';
-    // Keep same layout, but ensure values escaped
-    card.innerHTML='<div class="user-header">'+
-      '<div class="user-avatar">'+escapeHtml((u.name||'').charAt(0).toUpperCase())+'</div>'+
-      '<div class="user-name">'+escapeHtml(u.name||'')+'</div>'+
-      '<div class="saldo-container">'+
-        '<span id="saldo-display-'+u.id+'">Rp '+((u.saldo||0).toLocaleString())+'</span>'+
-        '<button class="btn-primary" onclick="changeSaldo(\''+u.id+'\',1)">+</button>'+
-        '<button class="btn-danger" onclick="changeSaldo(\''+u.id+'\' , -1)">-</button>'+
-      '</div>'+
-      '</div>';
-    userList.appendChild(card);
-
-    // attach click handler to name to open detail
-    var nameEl = card.querySelector('.user-name');
-    if(nameEl){
-      nameEl.onclick=function(e){
-        e.stopPropagation();
-        showUserDetail(u.id);
-      };
-    }
-  });
-}
-
-searchUserInput.oninput = function(){ renderUserList(); };
-
-/* ---------- User detail & edit ---------- */
-function showUserDetail(id){
-  var u = allUsersData.find(x=>x.id===id);
-  if(!u) return;
-  var html = '<h3>Detail User</h3>'+
-             '<label>Email</label><input type="text" id="email-'+escapeAttr(id)+'" value="'+escapeAttr(u.email||'')+'">'+
-             '<label>WA</label><input type="text" id="wa-'+escapeAttr(id)+'" value="'+escapeAttr(u.wa||'')+'">'+
-             '<label>Password</label><input type="text" id="pass-'+escapeAttr(id)+'" value="'+escapeAttr(u.password||'')+'">'+
-             '<button class="btn-primary" onclick="saveUserDetail(\''+escapeAttr(id)+'\')">Simpan</button>'+
-             '<button class="btn-danger" onclick="deleteUser(\''+escapeAttr(id)+'\')">Hapus</button>'+
-             '<button class="cancel-btn popup-button" onclick="closePopupFunc()">Tutup</button>';
-  showPopup(html);
-}
-
-function saveUserDetail(id){
-  var email=document.getElementById('email-'+id).value.trim();
-  var wa=document.getElementById('wa-'+id).value.trim();
-  var pass=document.getElementById('pass-'+id).value.trim();
-  if(!email||!wa||!pass){alert('Isi semua field dengan benar!'); return;}
-  // merge update
-  db.collection(ACCOUNTS).doc(id).set({email:email,wa:wa,password:pass},{merge:true})
-    .then(function(){ closePopupFunc(); showToastLocal('Data user berhasil diperbarui!'); })
-    .catch(function(err){ alert('Gagal menyimpan: '+err.message); });
-}
-
-function deleteUser(id){
-  if(!confirm('Hapus user ini?')) return;
-  db.collection(ACCOUNTS).doc(id).delete()
-    .then(function(){ showToastLocal('User dihapus'); })
-    .catch(function(err){ alert('Gagal hapus: '+err.message); });
-}
-
-/* ---------- Saldo change (admin) ---------- */
-function changeSaldo(id, type){
-  var user = allUsersData.find(u=>u.id===id);
-  if(!user) return;
-
-  var action = type === 1 ? 'Menambah' : 'Mengurangi';
-  var html = '<h3>'+action+' Saldo</h3>'+
-             '<input type="number" id="saldo-amount" placeholder="Masukkan nominal" min="1">'+
-             '<button class="btn-primary" onclick="confirmChangeSaldo(\''+escapeAttr(id)+'\', '+type+')">Simpan</button>'+
-             '<button class="cancel-btn popup-button" onclick="closePopupFunc()">Batal</button>';
-  showPopup(html);
-}
-
-function confirmChangeSaldo(id, type){
-  var amountEl = document.getElementById('saldo-amount');
-  if(!amountEl) return;
-  var amount = parseInt(amountEl.value);
-  if(isNaN(amount) || amount <=0){ alert('Masukkan nominal valid!'); return; }
-
-  var user = allUsersData.find(u=>u.id===id);
-  if(!user) return;
-
-  var newSaldo = type===1 ? (user.saldo||0)+amount : (user.saldo||0)-amount;
-  if(newSaldo<0){
-    alert('Saldo tidak bisa kurang dari 0!');
-    return;
-  }
-
-  // Write to Firestore (merge) - this will trigger realtime listeners on both admin & user
-  db.collection(ACCOUNTS).doc(id).set({saldo:newSaldo},{merge:true})
-    .then(function(){
-      closePopupFunc();
-      showToastLocal('Saldo berhasil diperbarui!');
-      // optimistic UI update: update local array & DOM immediately
-      var idx = allUsersData.findIndex(u=>u.id===id);
-      if(idx!==-1){ allUsersData[idx].saldo = newSaldo; }
-      var span = document.getElementById('saldo-display-'+id);
-      if(span) span.innerText = 'Rp '+newSaldo.toLocaleString();
-      // update total saldo display
-      totalSaldoSpan.innerText = 'Rp '+allUsersData.reduce((sum,u)=>sum+(u.saldo||0),0).toLocaleString();
-    })
-    .catch(function(err){
-      alert('Gagal update saldo: '+err.message);
-    });
-}
-
-/* ---------- Products CRUD (realtime already wired) ---------- */
-function editProduct(id,operator,denom,price,code){
-  // keep same popup layout
-  showPopup('<h3>Edit Produk</h3>'+ 
-    '<input type="text" id="prod-operator" value="'+escapeAttr(operator)+'" placeholder="Operator">'+
-    '<input type="text" id="prod-denom" value="'+escapeAttr(denom)+'" placeholder="Denom">'+
-    '<input type="number" id="prod-price" value="'+escapeAttr(price)+'" placeholder="Harga">'+
-    '<input type="text" id="prod-code" value="'+escapeAttr(code)+'" placeholder="Kode">'+
-    '<button class="btn-primary" onclick="saveProduct(\''+escapeAttr(id)+'\')">Simpan</button>'+
-    '<button class="cancel-btn popup-button" onclick="closePopupFunc()">Batal</button>'
-  );
-}
-function saveProduct(id){
-  var newOp=document.getElementById('prod-operator').value.trim();
-  var newDenom=document.getElementById('prod-denom').value.trim();
-  var newPrice=parseInt(document.getElementById('prod-price').value);
-  var newCode=document.getElementById('prod-code').value.trim();
-  if(!newOp||!newDenom||isNaN(newPrice)||!newCode){alert('Isi semua field dengan benar!'); return;}
-  db.collection(PRODUCTS).doc(id).set({operator:newOp,denom:newDenom,price:newPrice,code:newCode})
-    .then(function(){ closePopupFunc(); showToastLocal('Produk diperbarui'); })
-    .catch(function(err){ alert('Gagal simpan produk: '+err.message); });
-}
-
-document.getElementById('add-product-btn').onclick = function(){
-  showPopup('<h3>Tambah Produk</h3>'+
-    '<input type="text" id="prod-operator" placeholder="Operator">'+
-    '<input type="text" id="prod-denom" placeholder="Denom">'+
-    '<input type="number" id="prod-price" placeholder="Harga">'+
-    '<input type="text" id="prod-code" placeholder="Kode">'+
-    '<button class="btn-primary" onclick="addProduct()">Simpan</button>'+
-    '<button class="cancel-btn popup-button" onclick="closePopupFunc()">Batal</button>'
-  );
+// TOTAL PENGGUNA & TOTAL SALDO CLICK
+totalUsersBtn.onclick = ()=>{
+  panelControl.classList.add('hidden');
+  categoriesContainer.classList.add('hidden');
+  userPanel.classList.remove('hidden');
+  loadUsers(false); // urut pendaftar terbaru
+  filterUsers('');
 };
 
-function addProduct(){
-  var newOp = document.getElementById('prod-operator').value.trim();
-  var newDenom = document.getElementById('prod-denom').value.trim();
-  var newPrice = parseInt(document.getElementById('prod-price').value);
-  var newCode = document.getElementById('prod-code').value.trim();
-  if(!newOp||!newDenom||isNaN(newPrice)||!newCode){alert('Isi semua field dengan benar!'); return;}
-  db.collection(PRODUCTS).add({operator:newOp, denom:newDenom, price:newPrice, code:newCode})
-    .then(function(){ closePopupFunc(); showToastLocal('Produk ditambahkan'); })
-    .catch(function(err){ alert('Gagal tambah produk: '+err.message); });
+totalSaldoBtn.onclick = ()=>{
+  panelControl.classList.add('hidden');
+  categoriesContainer.classList.add('hidden');
+  userPanel.classList.remove('hidden');
+  loadUsers(true); // urut saldo terbanyak
+  filterUsers('');
+};
+
+// BACK TO MAIN
+backMainBtn.onclick=()=>{
+  panelControl.classList.remove('hidden');
+  categoriesContainer.classList.remove('hidden');
+  userPanel.classList.add('hidden');
+};
+
+// SALDO & EDIT USER
+function addSaldo(userId){
+  const amount = prompt("Masukkan nominal yang ingin ditambahkan:");
+  if(amount!==null && amount!==''){
+    const ref = db.collection('accounts').doc(userId);
+    ref.get().then(doc=>{
+      const saldo = Number(doc.data().saldo||0) + Number(amount);
+      ref.update({saldo});
+    });
+  }
 }
 
-function deleteProduct(id){
-  if(!confirm('Hapus produk ini?')) return;
-  db.collection(PRODUCTS).doc(id).delete()
-    .then(function(){ showToastLocal('Produk dihapus'); })
-    .catch(function(err){ alert('Gagal hapus produk: '+err.message); });
+function subtractSaldo(userId){
+  const amount = prompt("Masukkan nominal yang ingin dikurangi:");
+  if(amount!==null && amount!==''){
+    const ref = db.collection('accounts').doc(userId);
+    ref.get().then(doc=>{
+      const saldo = Math.max((Number(doc.data().saldo||0) - Number(amount)),0);
+      ref.update({saldo});
+    });
+  }
 }
 
-/* ---------- Utility & small helpers ---------- */
-function escapeHtml(str){
-  if(!str && str!==0) return '';
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-}
-function escapeAttr(str){
-  if(str===undefined||str===null) return '';
-  return String(str).replace(/"/g,'&quot;').replace(/'/g,"&#039;");
+function editUser(userId){
+  const ref = db.collection('accounts').doc(userId);
+  ref.get().then(doc=>{
+    const data = doc.data();
+    const email = prompt("Edit Email:", data.email||'');
+    const whatsapp = prompt("Edit WhatsApp:", data.whatsapp||'');
+    const password = prompt("Edit Password:", data.password||'');
+    ref.update({email, whatsapp, password});
+  });
 }
 
-// small toast replacement to avoid interfering with UI
-function showToastLocal(msg){
-  // simple alert-like non-blocking small toast
-  var d = document.createElement('div');
-  d.style.position='fixed'; d.style.right='16px'; d.style.bottom='16px';
-  d.style.background='rgba(0,0,0,0.8)'; d.style.color='white'; d.style.padding='10px 12px';
-  d.style.borderRadius='8px'; d.style.boxShadow='0 6px 18px rgba(0,0,0,0.12)';
-  d.style.zIndex = 9999; d.innerText = msg;
-  document.body.appendChild(d);
-  setTimeout(()=>{ d.style.opacity='0'; d.style.transition='opacity 300ms'; setTimeout(()=>d.remove(),350); },1800);
+// FILTER USER
+function filterUsers(value){
+  const filter = value.toLowerCase();
+  document.querySelectorAll('#user-table tbody tr').forEach(tr=>{
+    const text = tr.innerText.toLowerCase();
+    tr.style.display = text.includes(filter) ? '' : 'none';
+  });
 }
 
-/* ---------- Initial state: nothing loaded until admin logs in ---------- */
-/* The realtime listeners will start when admin logs in (startRealtimeUsers / startRealtimeProducts). */
+// BAGIAN 2 – PRODUK PER KATEGORI
+// ================== CATEGORIES ==================
+function loadCategories(){
+  db.collection('categories').orderBy('name').onSnapshot(snapshot=>{
+    categoriesContainer.innerHTML='';
+    snapshot.forEach(doc=>{
+      const category = doc.data();
+      const catCard = document.createElement('div');
+      catCard.classList.add('card');
 
+      catCard.innerHTML=`
+        <div class="category-header" onclick="toggleCategory('${doc.id}')">
+          <h3>${category.name}</h3>
+          <button class="btn-danger" onclick="deleteCategory(event,'${doc.id}')">Hapus Kategori</button>
+        </div>
+        <div class="category-products hidden" id="cat-${doc.id}">
+          <input type="text" placeholder="Operator" class="prod-operator">
+          <input type="text" placeholder="Denom" class="prod-denom">
+          <input type="number" placeholder="Harga" class="prod-price">
+          <button class="btn-primary" onclick="addProduct('${doc.id}',this)">Tambah Produk</button>
+          <table class="table">
+            <thead><tr><th>Operator</th><th>Denom</th><th>Harga</th><th>Aksi</th></tr></thead>
+            <tbody id="prod-table-${doc.id}"></tbody>
+          </table>
+        </div>
+      `;
+      categoriesContainer.appendChild(catCard);
+      loadProducts(doc.id);
+    });
+  });
+}
+
+// TAMBAH KATEGORI
+document.getElementById('add-category-btn').onclick=()=>{
+  const name = document.getElementById('new-category-name').value.trim();
+  if(!name) return alert("Isi nama kategori!");
+  db.collection('categories').add({name}).then(()=>{
+    document.getElementById('new-category-name').value='';
+  });
+}
+
+// HAPUS KATEGORI
+function deleteCategory(e,catId){
+  e.stopPropagation();
+  if(!confirm("Hapus kategori ini beserta produknya?")) return;
+  // Hapus produk kategori
+  db.collection('products').where("categoryId","==",catId).get().then(snap=>{
+    snap.forEach(doc=>doc.ref.delete());
+  });
+  db.collection('categories').doc(catId).delete();
+}
+
+// TOGGLE PRODUK PER KATEGORI
+function toggleCategory(catId){
+  const div = document.getElementById('cat-'+catId);
+  div.classList.toggle('hidden');
+}
+
+// TAMBAH PRODUK
+function addProduct(catId,btn){
+  const parent = btn.parentElement;
+  const operator = parent.querySelector('.prod-operator').value.trim();
+  const denom = parent.querySelector('.prod-denom').value.trim();
+  const price = Number(parent.querySelector('.prod-price').value.trim());
+  if(!operator || !denom || !price) return alert("Lengkapi semua kolom produk!");
+  db.collection('products').add({categoryId:catId,operator,denom,price}).then(()=>{
+    parent.querySelector('.prod-operator').value='';
+    parent.querySelector('.prod-denom').value='';
+    parent.querySelector('.prod-price').value='';
+  });
+}
+
+// LOAD PRODUK PER KATEGORI
+function loadProducts(catId){
+  db.collection('products').where("categoryId","==",catId).onSnapshot(snapshot=>{
+    const tbody = document.getElementById('prod-table-'+catId);
+    tbody.innerHTML='';
+    snapshot.forEach(doc=>{
+      const p = doc.data();
+      const tr = document.createElement('tr');
+      tr.innerHTML=`
+        <td>${p.operator}</td>
+        <td>${p.denom}</td>
+        <td>Rp ${p.price.toLocaleString()}</td>
+        <td>
+          <button class="btn-primary" onclick="editProduct('${doc.id}')">Edit</button>
+          <button class="btn-danger" onclick="deleteProduct('${doc.id}')">Hapus</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  });
+}
+
+// EDIT PRODUK
+function editProduct(prodId){
+  db.collection('products').doc(prodId).get().then(doc=>{
+    if(!doc.exists) return alert("Produk tidak ditemukan!");
+    const data = doc.data();
+    const operator = prompt("Operator:",data.operator||"");
+    if(operator===null) return;
+    const denom = prompt("Denom:",data.denom||"");
+    if(denom===null) return;
+    const price = prompt("Harga:",data.price||0);
+    if(price===null) return;
+    db.collection('products').doc(prodId).update({operator,denom,price:Number(price)});
+  });
+}
+
+// HAPUS PRODUK
+function deleteProduct(prodId){
+  if(!confirm("Hapus produk ini?")) return;
+  db.collection('products').doc(prodId).delete();
+}
+
+// FILTER PRODUK
+function filterProducts(query){
+  query = query.toLowerCase();
+  document.querySelectorAll('.categories .card').forEach(card=>{
+    const catName = card.querySelector('h3').innerText.toLowerCase();
+    const prods = card.querySelectorAll('tbody tr');
+    let visible = catName.includes(query);
+    prods.forEach(tr=>{
+      const tds = Array.from(tr.children).slice(0,3).map(td=>td.innerText.toLowerCase());
+      if(tds.some(t=>t.includes(query))) visible=true;
+    });
+    card.style.display = visible?'block':'none';
+  });
+}
+
+// FILTER USERS
+function filterUsers(query){
+  query = query.toLowerCase();
+  document.querySelectorAll('#user-table tbody tr').forEach(tr=>{
+    const tds = Array.from(tr.children).slice(0,3);
+    const match = tds.some(td=>td.innerText.toLowerCase().includes(query));
+    tr.style.display = match?'table-row':'none';
+  });
+}
 </script>
 </body>
 </html>
