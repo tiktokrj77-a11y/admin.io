@@ -11,8 +11,9 @@
   --accent:#5c2cf7;
   --muted:#6b7280;
   --danger:#ff4d4f;
+  --success:#16a34a;
   --shadow:0 4px 12px rgba(0,0,0,0.08);
-  font-family:Inter,system-ui,sans-serif
+  font-family:Inter,system-ui,sans-serif;
 }
 body{margin:0;background:var(--bg);color:#111827}
 .container{max-width:480px;margin:auto;padding:12px}
@@ -92,243 +93,197 @@ th{background:#f0f0f0}
   </div>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-firestore-compat.js"></script>
-<script>
-var firebaseConfig = {
+<script type="module">
+// Firebase setup
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc, collection, query, where, getDocs, onSnapshot, addDoc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-firestore.js";
+
+const firebaseConfig = {
   apiKey: "AIzaSyBj1P1BlyVgusvpVJ_5TcJdqnffVm6In6E",
   authDomain: "tokomiken-6fc10.firebaseapp.com",
   projectId: "tokomiken-6fc10",
   storageBucket: "tokomiken-6fc10.appspot.com",
   messagingSenderId: "454827178083",
-  appId: "1:454827178083:web:c83c3627d60942d5af2056",
-  measurementId: "G-18DVM3HBNY"
+  appId: "1:454827178083:web:c83c3627d60942d5af2056"
 };
-firebase.initializeApp(firebaseConfig);
-var db = firebase.firestore();
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-var ACCOUNTS='accounts';
-var PRODUCTS='products';
-var adminUser='admin';
-var adminPass='123456';
+const ADMIN_USERNAME = "admin";
+const ADMIN_PASSWORD = "admin123";
 
-var loginScreen=document.getElementById('login-screen');
-var adminPanel=document.getElementById('admin-panel');
-var loginBtn=document.getElementById('login-btn');
-var logoutBtn=document.getElementById('logout-btn');
-var popup=document.getElementById('popup');
-var popupBody=document.getElementById('popup-body');
-var closePopup=document.getElementById('close-popup');
-var userList=document.getElementById('user-list');
-var productTable=document.querySelector('#product-table tbody');
-var totalUserSpan=document.getElementById('total-user');
-var totalSaldoSpan=document.getElementById('total-saldo');
-var totalProdukSpan=document.getElementById('total-produk');
-var searchUserInput=document.getElementById('search-user');
+const ACCOUNTS = "accounts";
+const PRODUCTS = "products";
 
-function showPopup(content){ popupBody.innerHTML=content; popup.style.display='flex'; }
-function closePopupFunc(){ popup.style.display='none'; }
-closePopup.onclick=closePopupFunc;
+let adminLoggedIn = false;
 
-loginBtn.onclick=function(){
-  var u=document.getElementById('admin-username').value.trim();
-  var p=document.getElementById('admin-password').value.trim();
-  if(u===adminUser && p===adminPass){
-    loginScreen.style.display='none';
-    adminPanel.style.display='block';
-    initDemoData();
+// Login admin
+document.getElementById("login-btn").onclick = () => {
+  const user = document.getElementById("admin-username").value;
+  const pass = document.getElementById("admin-password").value;
+  if(user === ADMIN_USERNAME && pass === ADMIN_PASSWORD){
+    adminLoggedIn = true;
+    document.getElementById("login-screen").style.display = "none";
+    document.getElementById("admin-panel").style.display = "block";
+    initLiveData();
   } else {
-    showPopup('<p>Login gagal, username atau password salah</p>');
+    alert("Username atau password salah!");
   }
 };
-logoutBtn.onclick=function(){ location.reload(); };
 
-var allUsersData=[];
-var allProductsData=[];
+// Logout
+document.getElementById("logout-btn").onclick = () => location.reload();
 
-function initDemoData(){
-  db.collection(ACCOUNTS).get().then(snapshot=>{
-    if(snapshot.empty){
-      db.collection(ACCOUNTS).add({name:'Budi',email:'budi@mail.com',wa:'08123456789',saldo:100000,password:'123'}); 
-      db.collection(ACCOUNTS).add({name:'Siti',email:'siti@mail.com',wa:'08198765432',saldo:50000,password:'123'}); 
-    }
-  }).finally(loadUsers);
+// Popup
+const popup = document.getElementById("popup");
+const popupBody = document.getElementById("popup-body");
+document.getElementById("close-popup").onclick = () => popup.style.display="none";
 
-  db.collection(PRODUCTS).get().then(snapshot=>{
-    if(snapshot.empty){
-      db.collection(PRODUCTS).add({operator:'Telkomsel',denom:'10000',price:12000,code:'T01'});
-      db.collection(PRODUCTS).add({operator:'Indosat',denom:'5000',price:5500,code:'I01'});
-    }
-  }).finally(loadProducts);
-}
+// Live update users & products
+function initLiveData(){
+  const userList = document.getElementById("user-list");
+  const totalUserElem = document.getElementById("total-user");
+  const totalSaldoElem = document.getElementById("total-saldo");
+  const productTable = document.getElementById("product-table").querySelector("tbody");
+  const totalProdukElem = document.getElementById("total-produk");
 
-function loadUsers(){
-  userList.innerHTML='';
-  allUsersData=[];
-
-  db.collection(ACCOUNTS).get().then(function(snapshot){
-    var totalSaldo=0, count=0;
-    snapshot.forEach(function(doc){
-      var u=doc.data();
-      u.id = doc.id;
-      allUsersData.push(u);
-      totalSaldo+=u.saldo||0; count++;
+  // Users
+  const colUsers = collection(db, ACCOUNTS);
+  onSnapshot(colUsers, (snap)=>{
+    let totalUser = 0;
+    let totalSaldo = 0;
+    userList.innerHTML="";
+    snap.forEach(docSnap=>{
+      const data = docSnap.data();
+      totalUser++;
+      totalSaldo += data.saldo || 0;
+      const div = document.createElement("div");
+      div.className="user-card";
+      div.innerHTML=`<div class="user-header"><div class="user-avatar">${data.name[0].toUpperCase()}</div>
+        <div class="user-name">${data.name}</div>
+        </div>
+        <div class="saldo-container">Saldo: Rp <span class="saldo">${(data.saldo||0).toLocaleString()}</span>
+        <button class="btn-primary edit-saldo" data-id="${docSnap.id}">Edit</button></div>`;
+      userList.appendChild(div);
     });
-    totalUserSpan.innerText=count;
-    totalSaldoSpan.innerText='Rp '+totalSaldo.toLocaleString();
-    renderUserList();
+    totalUserElem.innerText = totalUser;
+    totalSaldoElem.innerText = "Rp " + totalSaldo.toLocaleString();
+  });
+
+  // Products
+  const colProducts = collection(db, PRODUCTS);
+  onSnapshot(colProducts, (snap)=>{
+    productTable.innerHTML="";
+    let totalProduk = 0;
+    snap.forEach(docSnap=>{
+      totalProduk++;
+      const data = docSnap.data();
+      const tr = document.createElement("tr");
+      tr.innerHTML=`<td>${data.operator}</td><td>${data.denom}</td><td>${data.price}</td><td>${data.code}</td>
+      <td>
+        <button class="btn-primary edit-product" data-id="${docSnap.id}">Edit</button>
+        <button class="btn-danger delete-product" data-id="${docSnap.id}">Hapus</button>
+      </td>`;
+      productTable.appendChild(tr);
+    });
+    totalProdukElem.innerText = totalProduk;
   });
 }
 
-function renderUserList(){
-  var filter = searchUserInput.value.toLowerCase();
-  userList.innerHTML='';
-  var filtered = allUsersData.filter(u=>{
-    return u.name.toLowerCase().includes(filter) ||
-           u.email.toLowerCase().includes(filter) ||
-           u.wa.toLowerCase().includes(filter);
-  });
-  filtered.forEach(function(u){
-    var card=document.createElement('div');
-    card.className='user-card';
-    card.innerHTML='<div class="user-header">'+
-      '<div class="user-avatar">'+u.name.charAt(0).toUpperCase()+'</div>'+
-      '<div class="user-name">'+u.name+'</div>'+
-      '<div class="saldo-container">'+
-        '<span id="saldo-display-'+u.id+'">Rp '+(u.saldo||0).toLocaleString()+'</span>'+
-        '<button class="btn-primary" onclick="changeSaldo(\''+u.id+'\',1)">+</button>'+
-        '<button class="btn-danger" onclick="changeSaldo(\''+u.id+'\' , -1)">-</button>'+
-      '</div>'+
-      '</div>';
-    userList.appendChild(card);
-
-    card.querySelector('.user-name').onclick=function(e){
-      e.stopPropagation();
-      showUserDetail(u.id);
-    };
-  });
-}
-
-searchUserInput.oninput = renderUserList;
-
-function showUserDetail(id){
-  var u = allUsersData.find(x=>x.id===id);
-  if(!u) return;
-  var html = '<h3>Detail User</h3>'+
-             '<label>Email</label><input type="text" id="email-'+u.id+'" value="'+u.email+'">'+
-             '<label>WA</label><input type="text" id="wa-'+u.id+'" value="'+u.wa+'">'+
-             '<label>Password</label><input type="text" id="pass-'+u.id+'" value="'+u.password+'">'+
-             '<button class="btn-primary" onclick="saveUserDetail(\''+u.id+'\')">Simpan</button>'+
-             '<button class="btn-danger" onclick="deleteUser(\''+u.id+'\')">Hapus</button>'+
-             '<button class="cancel-btn popup-button" onclick="closePopupFunc()">Tutup</button>';
-  showPopup(html);
-}
-
-function saveUserDetail(id){
-  var email=document.getElementById('email-'+id).value.trim();
-  var wa=document.getElementById('wa-'+id).value.trim();
-  var pass=document.getElementById('pass-'+id).value.trim();
-  if(!email||!wa||!pass){alert('Isi semua field dengan benar!'); return;}
-  db.collection(ACCOUNTS).doc(id).set({email:email,wa:wa,password:pass},{merge:true})
-    .then(function(){ closePopupFunc(); loadUsers(); alert('Data user berhasil diperbarui!'); });
-}
-
-function changeSaldo(id, type){
-  var user = allUsersData.find(u=>u.id===id);
-  if(!user) return;
-
-  var action = type === 1 ? 'Menambah' : 'Mengurangi';
-  var html = '<h3>'+action+' Saldo</h3>'+
-             '<input type="number" id="saldo-amount" placeholder="Masukkan nominal" min="1">'+
-             '<button class="btn-primary" onclick="confirmChangeSaldo(\''+id+'\', '+type+')">Simpan</button>'+
-             '<button class="cancel-btn popup-button" onclick="closePopupFunc()">Batal</button>';
-  showPopup(html);
-}
-
-function confirmChangeSaldo(id, type){
-  var amount = parseInt(document.getElementById('saldo-amount').value);
-  if(isNaN(amount) || amount <=0){ alert('Masukkan nominal valid!'); return; }
-
-  var user = allUsersData.find(u=>u.id===id);
-  if(!user) return;
-
-  var newSaldo = type===1 ? (user.saldo||0)+amount : (user.saldo||0)-amount;
-  if(newSaldo<0){
-    alert('Saldo tidak bisa kurang dari 0!');
-    return;
+// Edit saldo user
+document.addEventListener("click", async(e)=>{
+  if(e.target.classList.contains("edit-saldo")){
+    const id = e.target.dataset.id;
+    const docRef = doc(db, ACCOUNTS, id);
+    const docSnap = await getDoc(docRef);
+    if(!docSnap.exists()) return alert("User tidak ditemukan");
+    const data = docSnap.data();
+    const newSaldo = prompt(`Edit saldo ${data.name}`, data.saldo||0);
+    if(newSaldo!==null){
+      await updateDoc(docRef,{saldo:parseInt(newSaldo)});
+    }
   }
+});
 
-  db.collection(ACCOUNTS).doc(id).set({saldo:newSaldo},{merge:true}).then(function(){
-    user.saldo = newSaldo;
-    document.getElementById('saldo-display-'+id).innerText = 'Rp '+newSaldo.toLocaleString();
-    totalSaldoSpan.innerText = 'Rp '+allUsersData.reduce((sum,u)=>sum+(u.saldo||0),0).toLocaleString();
-    closePopupFunc();
-    alert('Saldo berhasil diperbarui!');
+// Add product
+document.getElementById("add-product-btn").onclick=()=>{
+  popupBody.innerHTML=`
+    <h3>Tambah Produk</h3>
+    <input type="text" id="prod-operator" placeholder="Operator">
+    <input type="text" id="prod-denom" placeholder="Denom">
+    <input type="number" id="prod-price" placeholder="Harga">
+    <input type="text" id="prod-code" placeholder="Kode">
+    <button class="popup-button" id="save-product-btn">Simpan</button>
+  `;
+  popup.style.display="flex";
+
+  document.getElementById("save-product-btn").onclick=async()=>{
+    const operator = document.getElementById("prod-operator").value;
+    const denom = document.getElementById("prod-denom").value;
+    const price = parseInt(document.getElementById("prod-price").value);
+    const code = document.getElementById("prod-code").value;
+    if(!operator||!denom||!price||!code) return alert("Semua kolom wajib diisi");
+    await addDoc(collection(db, PRODUCTS),{operator,denom,price,code});
+    popup.style.display="none";
+  }
+});
+
+// Delete & edit product
+document.addEventListener("click", async(e)=>{
+  if(e.target.classList.contains("delete-product")){
+    const id = e.target.dataset.id;
+    if(confirm("Hapus produk ini?")){
+      await deleteDoc(doc(db, PRODUCTS, id));
+    }
+  } else if(e.target.classList.contains("edit-product")){
+    const id = e.target.dataset.id;
+    const docRef = doc(db, PRODUCTS, id);
+    const docSnap = await getDoc(docRef);
+    if(!docSnap.exists()) return alert("Produk tidak ditemukan");
+    const data = docSnap.data();
+    popupBody.innerHTML=`
+      <h3>Edit Produk</h3>
+      <input type="text" id="prod-operator" placeholder="Operator" value="${data.operator}">
+      <input type="text" id="prod-denom" placeholder="Denom" value="${data.denom}">
+      <input type="number" id="prod-price" placeholder="Harga" value="${data.price}">
+      <input type="text" id="prod-code" placeholder="Kode" value="${data.code}">
+      <button class="popup-button" id="save-product-btn">Simpan</button>
+    `;
+    popup.style.display="flex";
+
+    document.getElementById("save-product-btn").onclick=async()=>{
+      const operator = document.getElementById("prod-operator").value;
+      const denom = document.getElementById("prod-denom").value;
+      const price = parseInt(document.getElementById("prod-price").value);
+      const code = document.getElementById("prod-code").value;
+      if(!operator||!denom||!price||!code) return alert("Semua kolom wajib diisi");
+      await updateDoc(docRef,{operator,denom,price,code});
+      popup.style.display="none";
+    }
+  }
+});
+
+// Search user
+document.getElementById("search-user").oninput=async(e)=>{
+  const term = e.target.value.toLowerCase();
+  const colUsers = collection(db, ACCOUNTS);
+  const snap = await getDocs(colUsers);
+  const userList = document.getElementById("user-list");
+  userList.innerHTML="";
+  snap.forEach(docSnap=>{
+    const data = docSnap.data();
+    if(data.name.toLowerCase().includes(term)||data.email?.toLowerCase().includes(term)||data.wa?.includes(term)){
+      const div = document.createElement("div");
+      div.className="user-card";
+      div.innerHTML=`<div class="user-header"><div class="user-avatar">${data.name[0].toUpperCase()}</div>
+        <div class="user-name">${data.name}</div>
+        </div>
+        <div class="saldo-container">Saldo: Rp <span class="saldo">${(data.saldo||0).toLocaleString()}</span>
+        <button class="btn-primary edit-saldo" data-id="${docSnap.id}">Edit</button></div>`;
+      userList.appendChild(div);
+    }
   });
 }
-
-function deleteUser(id){ if(confirm('Hapus user ini?')) db.collection(ACCOUNTS).doc(id).delete().then(loadUsers); }
-
-function loadProducts(){
-  productTable.innerHTML='';
-  db.collection(PRODUCTS).get().then(function(snapshot){
-    var count=0;
-    snapshot.forEach(function(doc){
-      var p=doc.data();
-      var tr=document.createElement('tr');
-      tr.innerHTML="<td>"+p.operator+"</td><td>"+p.denom+"</td><td>Rp "+p.price.toLocaleString()+"</td><td>"+p.code+"</td>"+
-        "<td><button class='btn-primary' onclick='editProduct(\""+doc.id+"\",\""+p.operator+"\",\""+p.denom+"\",\""+p.price+"\",\""+p.code+"\")'>Edit</button>"+
-        "<button class='btn-danger' onclick='deleteProduct(\""+doc.id+"\")'>Hapus</button></td>";
-      productTable.appendChild(tr); count++;
-    });
-    totalProdukSpan.innerText=count;
-  });
-}
-
-function deleteProduct(id){ if(confirm('Hapus produk ini?')) db.collection(PRODUCTS).doc(id).delete().then(loadProducts); }
-
-function editProduct(id,operator,denom,price,code){
-  showPopup('<h3>Edit Produk</h3>'+ 
-    '<input type="text" id="prod-operator" value="'+operator+'" placeholder="Operator">'+
-    '<input type="text" id="prod-denom" value="'+denom+'" placeholder="Denom">'+
-    '<input type="number" id="prod-price" value="'+price+'" placeholder="Harga">'+
-    '<input type="text" id="prod-code" value="'+code+'" placeholder="Kode">'+
-    '<button class="btn-primary" onclick="saveProduct(\''+id+'\')">Simpan</button>'+
-    '<button class="cancel-btn popup-button" onclick="closePopupFunc()">Batal</button>'
-  );
-}
-
-function saveProduct(id){
-  var newOp=document.getElementById('prod-operator').value.trim();
-  var newDenom=document.getElementById('prod-denom').value.trim();
-  var newPrice=parseInt(document.getElementById('prod-price').value);
-  var newCode=document.getElementById('prod-code').value.trim();
-  if(!newOp||!newDenom||isNaN(newPrice)||!newCode){alert('Isi semua field dengan benar!'); return;}
-  db.collection(PRODUCTS).doc(id).set({operator:newOp,denom:newDenom,price:newPrice,code:newCode}).then(function(){ closePopupFunc(); loadProducts(); });
-}
-
-document.getElementById('add-product-btn').onclick=function(){
-  showPopup('<h3>Tambah Produk</h3>'+
-    '<input type="text" id="prod-operator" placeholder="Operator">'+
-    '<input type="text" id="prod-denom" placeholder="Denom">'+
-    '<input type="number" id="prod-price" placeholder="Harga">'+
-    '<input type="text" id="prod-code" placeholder="Kode">'+
-    '<button class="btn-primary" onclick="addProduct()">Simpan</button>'+
-    '<button class="cancel-btn popup-button" onclick="closePopupFunc()">Batal</button>'
-  );
-};
-
-function addProduct(){
-  var newOp=document.getElementById('prod-operator').value.trim();
-  var newDenom=document.getElementById('prod-denom').value.trim();
-  var newPrice=parseInt(document.getElementById('prod-price').value);
-  var newCode=document.getElementById('prod-code').value.trim();
-  if(!newOp||!newDenom||isNaN(newPrice)||!newCode){alert('Isi semua field dengan benar!'); return;}
-  db.collection(PRODUCTS).add({operator:newOp,denom:newDenom,price:newPrice,code:newCode}).then(function(){ closePopupFunc(); loadProducts(); });
-}
-
-// Inisialisasi semua
-function loadAll(){ loadUsers(); loadProducts(); }
 </script>
 </body>
 </html>
